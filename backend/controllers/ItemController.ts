@@ -1,3 +1,15 @@
+
+export interface IItem {
+    item_name: string,
+    item_type: string,
+    item_desc?: string,
+    item_attrib?: string,
+    damage?: string,
+    armor_value?: number,
+    effect?: string,
+    price: number,
+    large_item: boolean
+}
 // Create item
 // get all items - include parameter filtering for artifacts
 // modigy item by id - include artifact ownership

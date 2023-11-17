@@ -70,10 +70,13 @@ export const InitializeDatabase = async () =>{
         "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Crypt Delwers', 'true', 50, ( SELECT user_id from users where user_id ='2' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;",
         "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Night Blinkers', 'true', 50, ( SELECT user_id from users where user_id ='2' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;"
     ]
-    const populateCharacters = `    
-        INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) 
-            VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Prince Delulu', '12', '1', '+2', '+2', '-2', '-1', '7') ON CONFLICT DO NOTHING;
-    `
+    const populateCharacters = [
+        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Prince Delulu', '12', '1', '+2', '+2', '-2', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Zargotrhax', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Malux', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Gorian', '9', '0', '+3', '0', '-2', '0', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Birb', '5', '0', '0', '0', '0', '-3', '8') ON CONFLICT DO NOTHING;",
+    ]
     const populateItems = [    
         "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Short sword', 'Weapon', 'Dull but agile sword', 'agi', 'D6', null, null, '2', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
         "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Warhammer', 'Weapon', 'Mighty tool of war', 'str', 'D12', null, null, '10', 'true', 'false', null ) ON CONFLICT DO NOTHING;",
@@ -93,7 +96,9 @@ export const InitializeDatabase = async () =>{
             await executeQuery(warband)
         })
         console.log("POPULATE TABLES: Character")
-        await executeQuery(populateCharacters)
+        populateCharacters.forEach(async (charcter) => {
+            await executeQuery(charcter)
+        })
         console.log("POPULATE TABLES: Item")
         populateItems.forEach( async (item) => {
             await executeQuery(item)
