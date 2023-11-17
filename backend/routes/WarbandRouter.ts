@@ -1,5 +1,4 @@
-import { validateUser } from "../controllers/UserController"
-import { getPublicWarbands, createWarband, getWarbandById, modifyWarband } from "../controllers/WarbandController"
+import { getPublicWarbands, createWarband, getWarbandById, modifyWarband, deleteWarband } from "../controllers/WarbandController"
 import express, {Request, Response} from "express";
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware";
 
@@ -52,22 +51,21 @@ warbandRoute.put(("/modify"), userAuthentication, async (req: IAuthenticatedRequ
 
 warbandRoute.delete(("/delete/:id"), userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     try {
-        // const warband = req.body
-        // const id = req.userToken
-        // warband.id = id
-        // //await createWarband(warband)
-        // res.status(201).send(`Deleted warband ${warband.warband_name}`)
+        const warband_id = req.params.id
+        const uuid = req.userToken?.uuid ? req.userToken.uuid : ""
+        if (uuid === ""){
+            res.send(401).send("Missing ID")
+        }
+        const result = await deleteWarband(String(warband_id), uuid)
+        if (result?.length == 0){
+            return res.status(200).send(`No warband with id ${warband_id} existed on this user`)
+        }
+        res.status(200).send(`Warband with id ${warband_id} deleted`)
     } catch (error) { 
-        res.status(404).send("Error during Warband creation\n"+error)
+        res.status(404).send("Error during Warband deletion\n"+error)
 
     }
 })
-
-
-// TODO: post warband
-// TODO: update warband
-// TODO: delete warband
-// TODO: delete warband
 
 // TODO: get member of warband
 // TODO: modify member of warband

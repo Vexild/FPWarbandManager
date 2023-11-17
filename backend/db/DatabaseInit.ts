@@ -66,9 +66,9 @@ export const InitializeDatabase = async () =>{
         INSERT INTO Users(user_name, user_password, email) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING
     `
     const populateWarbands = [    
-        "INSERT INTO Warband(warband_name, public, resources, owner_id) VALUES ('Doom Scourgers', 'true', 50, ( SELECT user_id from users where user_id ='1' )) ON CONFLICT DO NOTHING;",
-        "INSERT INTO Warband(warband_name, public, resources, owner_id) VALUES ('Crypt Delwers', 'true', 50, ( SELECT user_id from users where user_id ='1' )) ON CONFLICT DO NOTHING;",
-        "INSERT INTO Warband(warband_name, public, resources, owner_id) VALUES ('Night Blinkers', 'true', 50, ( SELECT user_id from users where user_id ='1' )) ON CONFLICT DO NOTHING;"
+        "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Doom Scourgers', 'true', 50, ( SELECT user_id from users where user_id ='1' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;",
+        "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Crypt Delwers', 'true', 50, ( SELECT user_id from users where user_id ='2' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;",
+        "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Night Blinkers', 'true', 50, ( SELECT user_id from users where user_id ='2' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;"
     ]
     const populateCharacters = `    
         INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) 

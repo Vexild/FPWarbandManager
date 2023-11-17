@@ -57,7 +57,7 @@ export const getPublicWarbands = async () => {
 
 export const getWarbandById = async (id: number) => {
     try {
-        const query = "SELECT * from Warband WHERE warband_id = ($1) AND public = true RETURNING ID" 
+        const query = "SELECT * from Warband WHERE warband_id = ($1) AND public = true" 
         // we need a second query since we need 1 data from Warband table and up to 5 from character table
         const result = await executeQuery(query, [String(id)])
         return result.rows
@@ -80,16 +80,13 @@ export const modifyWarband = async (warband: IWarband, uuid: string) => {
     }}   
 }
 
-export const deleteWarband = async (warband_id: number, user_uuid: string) => { // We need to have user UUID for deleting their warbands. User can only delete their Warbands and serial integer ID is too easy to crack
+export const deleteWarband = async (warband_id: string, user_uuid: string) => { 
     try {
         const query = `
-            DELETE FROM Warband WHERE warband_id = ($1) AND owner_id = ($2)
-        `
-        const result = await executeQuery(query, [String(warband_id), user_uuid])
+            DELETE FROM Warband WHERE warband_id = ($1) AND owner_uuid = ($2) RETURNING warband_name`
+        const result = await executeQuery(query, [warband_id, user_uuid])
         return result.rows
     } catch { () => {
         throw new Error("Error during warband delete")
     }}
 }
-// modify warband
-// delete warband
