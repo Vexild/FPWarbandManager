@@ -26,11 +26,12 @@ warbandRoute.get(("/:id"), async (req: Request, res: Response) => {
 })
 
 warbandRoute.post(("/new"), userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    // NOTE: We do not parse warband names as it would be rather limiting. Users can produce as many warbands as they like.
     try {
         const warband = req.body
-        warband.owner_id = req.userToken?.uuid
-        await createWarband(warband)
-        res.status(201).send(`Warband ${warband.warband_name} created`)
+        const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
+        const result = await createWarband(warband, uuid)
+        res.status(201).send(result)
     } catch (error) { 
         res.status(404).send("Error during Warband creation\n"+error)
 
@@ -40,7 +41,8 @@ warbandRoute.post(("/new"), userAuthentication, async (req: IAuthenticatedReques
 warbandRoute.put(("/modify"), userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     try {
         const warband = req.body
-        const result = await modifyWarband(warband, 2)
+        const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
+        const result = await modifyWarband(warband, uuid)
         res.status(201).send(result)
     } catch (error) { 
         res.status(404).send("Error during Warband creation\n"+error)

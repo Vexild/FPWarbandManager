@@ -20,9 +20,9 @@ export const registerUser = async (user: RegUser) => {
             INSERT INTO users (user_name, user_password, email) VALUES ($1, $2, $3) RETURNING user_uuid`
         console.log("query: ",query)
         const result = await executeQuery(query, params)
-        console.log("Registering Result: ", result)
-        const uuid = result.rows[0].user_uuid
-        const token = createToken(user.userName, uuid)
+        const uuid = result.rows
+        console.log("Registering Result: ", uuid)
+        const token = createToken(user.userName, String(uuid))
         return token
     } catch (error) {
         throw new Error("User already exists")

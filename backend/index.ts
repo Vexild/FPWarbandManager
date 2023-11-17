@@ -8,7 +8,9 @@ import "dotenv/config"
 
 
 const app = express();
-InitializeDatabase()
+module.exports = app
+
+//InitializeDatabase()
 
 const PORT = process.env.PORT
 app.use(express.json())
@@ -20,6 +22,8 @@ app.get("/", (req: Request, res: Response) => {
     return res.status(200).send("Landing")
 })
 
-app.use("/",NoRouteFound)
+app.use(NoRouteFound)
 
 app.listen(PORT, () => console.log(`Listening to port ${PORT}`))
+
+export default app

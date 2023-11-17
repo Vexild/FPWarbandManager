@@ -14,6 +14,7 @@ export const InitializeDatabase = async () =>{
 
     CREATE TABLE IF NOT EXISTS Users (
         user_id serial PRIMARY KEY,
+        user_uuid UUID NOT NULL DEFAULT uuid_generate_v1(),
         user_name VARCHAR (50) NOT NULL,
         user_password VARCHAR (255) NOT NULL,
         email VARCHAR (255) UNIQUE NOT NULL,
@@ -26,6 +27,7 @@ export const InitializeDatabase = async () =>{
         public BOOLEAN NOT NULL,
         resources SMALLINT,
         owner_id INTEGER REFERENCES Users(user_id),
+        owner_uuid UUID,
         created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
 

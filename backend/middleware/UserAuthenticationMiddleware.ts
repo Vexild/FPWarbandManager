@@ -20,6 +20,7 @@ export const userAuthentication = (req: IAuthenticatedRequest, res: Response, ne
     const secret = String(process.env.SECRET)
     try {
         const decodedToken = jwt.verify(token, secret) as IUserToken
+        console.log("Decoded: ",decodedToken)
         req.userToken = decodedToken
         next()
     } catch (error) {

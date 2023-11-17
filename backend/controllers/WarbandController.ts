@@ -33,11 +33,12 @@ interface IWarband {
     warband_characters: Array<ICharacter>
 }
 
-export const createWarband = async (warband: IWarband) => {    
+export const createWarband = async (warband: IWarband, uuid: string) => {    
     try {
-        const query = "INSERT INTO Warband (warband_name, public, resources, owner_id) VALUES (($1), ($2), ($3), ($4)) ON CONFLICT DO NOTHING"
-        console.log( [ warband.warband_name, String(warband.public), String(warband.warband_resources), warband.owner_id])
-        const result = await executeQuery(query, [ warband.warband_name, String(warband.public), String(warband.warband_resources), String(warband.owner_id)])
+        const query = "INSERT INTO Warband (warband_name, public, resources, owner_id, owner_uuid) VALUES (($1), ($2), ($3), ($4), ($5)) ON CONFLICT DO NOTHING RETURNING *"
+        console.log( [ warband.warband_name, String(warband.public), String(warband.warband_resources), warband.owner_id, uuid ] )
+        const result = await executeQuery(query, [ warband.warband_name, String(warband.public), String(warband.warband_resources), String(warband.owner_id), String(uuid) ])
+        console.log("Res_",result.rows)
         return result.rows
     } catch { () => {
         throw new Error("Error during adding new Warband")
@@ -66,10 +67,13 @@ export const getWarbandById = async (id: number) => {
     }}
 }
 
-export const modifyWarband = async (warband: IWarband, owner_id: number) => {
+export const modifyWarband = async (warband: IWarband, uuid: string) => {
     try {
-        const query = "UPDATE Warband SET warband_name = ($1), public = ($2), resources = ($3) WHERE owner_id = ($4) AND warband_id = ($5) RETURNING *"
-        const result = await executeQuery(query, [warband.warband_name, String(warband.public), String(warband.warband_resources), String(owner_id), String(warband.id)])
+        console.log("MOD")
+        console.log([warband.warband_name, String(warband.public), String(warband.warband_resources), String(uuid), String(warband.id)])
+        const query = "UPDATE Warband SET warband_name = ($1), public = ($2), resources = ($3) WHERE owner_uuid = ($4) AND warband_id = ($5) RETURNING *"
+        const result = await executeQuery(query, [warband.warband_name, String(warband.public), String(warband.warband_resources), String(uuid), String(warband.id)])
+        // TODO: Update doesnt work. There needs to be a check for right warband AND correct uuid
         return result.rows
     } catch { () => {
         throw new Error("Error during warband update")
