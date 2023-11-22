@@ -88,7 +88,7 @@ export const getAllUsers = async () => {
 const createToken = (name: string, uuid: string) => {
     const payload = { name: name, uuid: uuid}
     const secret = String(process.env.SECRET)
-    const options = { expiresIn: "15m"}
+    const options = { expiresIn: "1h"}
     const token = jwt.sign(payload, secret, options)
     console.log("Token created: ",token)
     return token

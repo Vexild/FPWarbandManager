@@ -7,8 +7,9 @@ export const InitializeDatabase = async () =>{
     const dummyPass = await argon2.hash("admin")
     const creationQuery =`
 
-    DROP TABLE IF EXISTS Character CASCADE;
+    DROP TABLE IF EXISTS CarriedItem CASCADE;
     DROP TABLE IF EXISTS Item CASCADE;
+    DROP TABLE IF EXISTS Character CASCADE;
     DROP TABLE IF EXISTS Warband CASCADE;
     DROP TABLE IF EXISTS Users CASCADE;
 
@@ -41,8 +42,7 @@ export const InitializeDatabase = async () =>{
         agi VARCHAR(3) NOT NULL,
         pre VARCHAR(3) NOT NULL,
         tou VARCHAR(3) NOT NULL,
-        eq_slots SMALLINT NOT NULL,
-        created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+        eq_slots SMALLINT NOT NULL
     );
     
     CREATE TABLE IF NOT EXISTS Item (
@@ -57,8 +57,14 @@ export const InitializeDatabase = async () =>{
         item_price SMALLINT,
         large_item BOOLEAN NOT NULL,
         artifact BOOLEAN NOT NULL,
-        artifact_owner INTEGER REFERENCES Users(user_id),
-        created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+        artifact_owner INTEGER REFERENCES Users(user_id)
+    );
+    
+    CREATE TABLE IF NOT EXISTS CarriedItem (
+        id SERIAL PRIMARY KEY,
+        item_id INTEGER NOT NULL,
+        warband_id INTEGER NOT NULL,
+        character_id INTEGER
     );
     `
 
@@ -84,6 +90,13 @@ export const InitializeDatabase = async () =>{
         "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Gorgaring', 'Item', 'Toothring of an ancient troll shaman', null, null, null, 'Wielder only dies when they hit negative 6 hitpoints.', '20', 'false', 'True', 1 ) ON CONFLICT DO NOTHING;",
     ]
 
+    const populateCarriedItems = [    
+        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 1, 1, 1) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 1, 1, 2) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 2, 1, 3) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 3, 1, null) ON CONFLICT DO NOTHING;",
+    ]
+
     console.log("INITIALIZE DB TABLES")
     try{
         await executeQuery(creationQuery)
@@ -103,6 +116,11 @@ export const InitializeDatabase = async () =>{
         populateItems.forEach( async (item) => {
             await executeQuery(item)
         })
+        console.log("POPULATE TABLES: CarriedItem")
+        populateCarriedItems.forEach( async (item) => {
+            await executeQuery(item)
+        })
+        
         console.log("INITIALIZATION COMPLETED")
     } catch (error){
         console.log("DB INIT ERROR\n",error)

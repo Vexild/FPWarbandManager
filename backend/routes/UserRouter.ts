@@ -14,7 +14,6 @@ export interface User {
 }
 
 userRoute.post("/register", async (req: Request, res: Response) => {
-
     const user = req.body as RegUser
     console.log("user: ",user)
     // TODO: sanitizer middleware

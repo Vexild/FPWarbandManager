@@ -25,7 +25,6 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.use(NoRouteFound)
-
 app.listen(PORT, () => console.log(`Listening to port ${PORT}`))
 
 export default app
