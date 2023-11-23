@@ -35,6 +35,7 @@ export const InitializeDatabase = async () =>{
     CREATE TABLE IF NOT EXISTS Character (
         character_id serial PRIMARY KEY,
         warband_id INTEGER REFERENCES Warband(warband_id) NOT NULL,
+        owner_uuid UUID,
         character_name VARCHAR (80) NOT NULL,
         hp SMALLINT NOT NULL,
         armor_tier SMALLINT NOT NULL,
@@ -77,11 +78,11 @@ export const InitializeDatabase = async () =>{
         "INSERT INTO Warband(warband_name, public, resources, owner_id, owner_uuid) VALUES ('Night Blinkers', 'true', 50, ( SELECT user_id from users where user_id ='2' ), ( SELECT user_uuid from users where user_id ='2' )) ON CONFLICT DO NOTHING;"
     ]
     const populateCharacters = [
-        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Prince Delulu', '12', '1', '+2', '+2', '-2', '-1', '7') ON CONFLICT DO NOTHING;",
-        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Zargotrhax', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
-        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Malux', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
-        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Gorian', '9', '0', '+3', '0', '-2', '0', '7') ON CONFLICT DO NOTHING;",
-        "INSERT INTO Character(warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), 'Birb', '5', '0', '0', '0', '0', '-3', '8') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Prince Delulu', '12', '1', '+2', '+2', '-2', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Zargotrhax', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Malux', '15', '2', '+1', '+3', '-3', '-1', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Gorian', '9', '0', '+3', '0', '-2', '0', '7') ON CONFLICT DO NOTHING;",
+        "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Birb', '5', '0', '0', '0', '0', '-3', '8') ON CONFLICT DO NOTHING;",
     ]
     const populateItems = [    
         "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Short sword', 'Weapon', 'Dull but agile sword', 'agi', 'D6', null, null, '2', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
