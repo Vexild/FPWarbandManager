@@ -15,12 +15,8 @@ export interface ICharacter {
 }
 // create Character. This creates from 1 to 5 characters to single warband
 export const createCharacter = async (warband_id: number, uuid: string, characters: Array<ICharacter> ) => {    
-    console.log("Character meta data: ",warband_id, uuid, characters)
     const warbandSize: number = await getWarbandSizeById(warband_id)
-    console.log(warbandSize)
-    console.log("characters.length:" ,characters.length)
     if (warbandSize+characters.length > 5){
-        console.log(warbandSize)
         switch (warbandSize) {
         case 5:
             throw new Error("Inserting too many characters to Warband. No places left")
@@ -29,13 +25,13 @@ export const createCharacter = async (warband_id: number, uuid: string, characte
         }
     } else {
         const query = `
-        INSERT INTO Character (character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, warband_id) 
-        VALUES (($1), ($2), ($3), ($4), ($5), ($6), ($7), ($8), ($9))
+        INSERT INTO Character (character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, warband_id, owner_uuid) 
+        VALUES (($1), ($2), ($3), ($4), ($5), ($6), ($7), ($8), ($9), ($10))
         `
         characters.forEach( async (char) =>  {
             const character_parameters = Object.values(char)
             character_parameters.push(warband_id)
-            console.log("character_parameters", character_parameters)
+            character_parameters.push(uuid)
             await executeQuery(query, character_parameters)
         })
     }

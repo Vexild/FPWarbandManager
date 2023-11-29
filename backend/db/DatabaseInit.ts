@@ -51,7 +51,7 @@ export const InitializeDatabase = async () =>{
         item_name VARCHAR (50) NOT NULL,
         item_type VARCHAR (50) NOT NULL,
         item_desc VARCHAR (255),
-        iteam_attrib VARCHAR(5),
+        item_attrib VARCHAR(5),
         damage VARCHAR (5),
         armor_value SMALLINT,
         effect VARCHAR (255),
@@ -85,10 +85,10 @@ export const InitializeDatabase = async () =>{
         "INSERT INTO Character(warband_id, owner_uuid, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots ) VALUES ( (SELECT warband_id from warband where warband_id ='1'), ( SELECT user_uuid from users where user_id ='2' ), 'Birb', '5', '0', '0', '0', '0', '-3', '8') ON CONFLICT DO NOTHING;",
     ]
     const populateItems = [    
-        "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Short sword', 'Weapon', 'Dull but agile sword', 'agi', 'D6', null, null, '2', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
-        "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Warhammer', 'Weapon', 'Mighty tool of war', 'str', 'D12', null, null, '10', 'true', 'false', null ) ON CONFLICT DO NOTHING;",
-        "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Light Armor', 'Armor', 'Dull but agile sword', 'agi', null, '1', null, '10', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
-        "INSERT INTO item(item_name, item_type, item_desc, iteam_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Gorgaring', 'Item', 'Toothring of an ancient troll shaman', null, null, null, 'Wielder only dies when they hit negative 6 hitpoints.', '20', 'false', 'True', 1 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO item(item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Short sword', 'weapon', 'Dull but agile sword', 'agi', 'D6', null, null, '2', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO item(item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Warhammer', 'weapon', 'Mighty tool of war', 'str', 'D12', null, null, '10', 'true', 'false', null ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO item(item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Light Armor', 'armor', 'Dull but agile sword', 'agi', null, '1', null, '10', 'false', 'false', null ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO item(item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ('Gorgaring', 'item', 'Toothring of an ancient troll shaman', null, null, null, 'Wielder only dies when they hit negative 6 hitpoints.', '20', 'false', 'True', 1 ) ON CONFLICT DO NOTHING;",
     ]
 
     const populateCarriedItems = [    
