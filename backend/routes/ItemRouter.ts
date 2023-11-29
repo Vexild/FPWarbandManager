@@ -1,13 +1,13 @@
 import express, {Response, Request} from "express"
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware"
-import { IItem, createItem, getAllItems } from "../controllers/ItemController"
+import { IItem, createItem, deleteItem, getAllItems, getSingleItems, updateItem } from "../controllers/ItemController"
 
 const itemRoute = express.Router()
 
 
 itemRoute.post("/new", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     try {
-        // WE need sanitation for all inputs here
+        // TODO: WE need sanitation for all inputs here
         const item = req.body as IItem
         const types = ["weapon", "armor", "item"]
         if (!types.includes(item.item_type)) {
@@ -21,48 +21,22 @@ itemRoute.post("/new", userAuthentication, async (req: IAuthenticatedRequest, re
     }
 })
 
-// itemRoute.post("/login", async (req: Request, res: Response) => {
-//     console.log(req.body)
-//     const user: User = { userName: req.body.userName, password: req.body.password }
-//     await validateUser(user)
-//         .then( (token) => {
-//             console.log("Token: ",token)
-//             res.status(200).send(token)
-//         })
-//         .catch( () => {
-//             res.status(401).send("Invalid username or password")
-//         })
-// })
 
-// itemRoute.get("/id/:id", userAuthentication,  async (req: IAuthenticatedRequest, res: Response) => {
-//     const user_id = req.params.id
-//     console.log(user_id)
-//     if (user_id === undefined) {
-//         return res.status(401).send("Missing id parameter")
-//     }
-//     await getUser(user_id)
-//         .then( (user) => {
-//             return res.status(200).send(user)
-//         })
-//         .catch( (error: Error) => {
-//             return res.status(404).send(error)
-//         })
-// })
+itemRoute.get("/single/:id", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    try{
+        const item_id = req.params.id
+        // TODO add sanitation for params
+        const item = await getSingleItems(Number(item_id))
+        console.log(item)
+        if (item === undefined) {
+            return res.status(404).send("No item found")
+        }
+        return res.status(200).send(item)
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
 
-// itemRoute.put("/update", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
-//     const user = req.body as RegUser
-//     await updateUser(user)
-//         .then( () => {
-//             res.status(201).send("User updated")
-//         })
-//         .catch( (error: Error) => {
-//             res.status(401).send(error)
-//         })
-// })
-
-// // TODO: delete user
-
-// Rquires Admin authentication
 itemRoute.get("/all", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     // TODO add sanitation for query params
     try{
@@ -89,5 +63,42 @@ itemRoute.get("/all", userAuthentication, async (req: IAuthenticatedRequest, res
         res.status(400).send(error)
     }
 })
+
+itemRoute.put("/update", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    try {
+        // TODO: WE need sanitation for all inputs here
+        const item = req.body as IItem
+        const types = ["weapon", "armor", "item"]
+        if (!types.includes(item.item_type)) {
+            return res.status(400).send("Invalid type")
+        }
+        if (!item.item_id) {
+            return res.status(400).send("Id missing")
+
+        }
+        console.log("item: ",item)
+        const result = await updateItem(item)
+        console.log("Result:",result)
+        return res.status(200).send(result)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+itemRoute.delete("/delete/:id", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    try {
+        // TODO: WE need sanitation for all inputs here
+        const item_id = req.params.id
+        const result = await deleteItem(Number(item_id))
+        console.log("Result:",result)
+        if (result === undefined) {
+            return res.status(404).send("Item never existed")
+        }
+        return res.status(200).send(`Deleted ${result.item_name}`)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
 
 export default itemRoute
