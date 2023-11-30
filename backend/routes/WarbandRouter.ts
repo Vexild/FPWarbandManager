@@ -1,6 +1,7 @@
 import { getPublicWarbands, createWarband, getWarbandById, modifyWarband, deleteWarband } from "../controllers/WarbandController"
 import express, {Request, Response} from "express";
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware";
+import { createCharacter } from "../controllers/CharacterController";
 
 const warbandRoute = express.Router();
 
@@ -26,10 +27,24 @@ warbandRoute.get(("/:id"), async (req: Request, res: Response) => {
 
 warbandRoute.post(("/new"), userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     // NOTE: We do not parse warband names as it would be rather limiting. Users can produce as many warbands as they like.
+    // NOTE: We do not want to post equipments during warband creation. We only want to post the warband data and members with no equipment
     try {
+        // stage 1: add warband metadata
         const warband = req.body
         const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
-        const result = await createWarband(warband, uuid)
+        
+        const wb_result = await createWarband(warband, uuid)
+        
+        // stage 2: add warband characters
+        const warband_id = wb_result.warband_id
+        const character_result = await createCharacter(warband_id, uuid, warband.warband_characters)
+
+        // stage 3: compose the result
+        console.log("Characters : ", character_result)
+        const result = {
+            wb_result,
+            warband_characters: character_result
+        }
         res.status(201).send(result)
     } catch (error) { 
         res.status(404).send("Error during Warband creation\n"+error)

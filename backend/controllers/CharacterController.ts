@@ -4,6 +4,8 @@ import { IItem } from "./ItemController"
 export interface ICharacter {
     character_id?: number,
     character_name: string,
+    owner_uuid?: string,
+    warband_id: number,
     hp: number,
     armor_tier: number,
     str: string,
@@ -26,14 +28,33 @@ export const createCharacter = async (warband_id: number, uuid: string, characte
     } else {
         const query = `
         INSERT INTO Character (character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, warband_id, owner_uuid) 
-        VALUES (($1), ($2), ($3), ($4), ($5), ($6), ($7), ($8), ($9), ($10))
+        VALUES (($1), ($2), ($3), ($4), ($5), ($6), ($7), ($8), ($9), ($10)) RETURNING character_name, hp, armor_tier, str, agi, pre, tou, eq_slots
         `
-        characters.forEach( async (char) =>  {
+        const createdCharacters = characters.map( (char) =>  {
+            return {
+                character_name: char.character_name,
+                hp: char.hp,
+                armor_tier: char.armor_tier,
+                str: char.str,
+                agi: char.agi,
+                pre: char.pre,
+                tou: char.tou,
+                eq_slots: char.eq_slots,
+            }
+        })
+        createdCharacters.forEach( async (char) => {
             const character_parameters = Object.values(char)
+            // TODO: fix this error
             character_parameters.push(warband_id)
             character_parameters.push(uuid)
-            await executeQuery(query, character_parameters)
-        })
+            const result = await executeQuery(query, character_parameters)
+            console.log("result.rows[0]",result.rows[0])
+            
+            return result.rows[0]
+            
+        } )
+        console.log("createdCharacters",createdCharacters)
+        return createdCharacters
     }
 }
 

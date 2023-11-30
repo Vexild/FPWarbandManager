@@ -35,11 +35,12 @@ interface IWarband {
 
 export const createWarband = async (warband: IWarband, uuid: string) => {    
     try {
+        console.log("Warband: ",warband)
         const query = "INSERT INTO Warband (warband_name, public, resources, owner_id, owner_uuid) VALUES (($1), ($2), ($3), ($4), ($5)) ON CONFLICT DO NOTHING RETURNING *"
         console.log( [ warband.warband_name, String(warband.public), String(warband.warband_resources), warband.owner_id, uuid ] )
         const result = await executeQuery(query, [ warband.warband_name, String(warband.public), String(warband.warband_resources), String(warband.owner_id), String(uuid) ])
         console.log("Res_",result.rows)
-        return result.rows
+        return result.rows[0]
     } catch { () => {
         throw new Error("Error during adding new Warband")
     }}
