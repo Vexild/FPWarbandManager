@@ -60,7 +60,10 @@ characterRoute.put("/modify", userAuthentication , async (req: IAuthenticatedReq
     try {
         const uuid = req.userToken?.uuid ? req.userToken.uuid : ""
         const character: ICharacter = req.body
+        console.log("character: ",character)
+        console.log("uuid: ",uuid)
         const result = await updateCharacter(character, uuid)
+        console.log("result. ",result)
         if (result === 0){
             res.status(404).send("No character found")
         } else {

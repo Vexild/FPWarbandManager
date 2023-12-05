@@ -1,6 +1,6 @@
 import express, {Response, Request} from "express"
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware"
-import { IItem, createItem, deleteItem, getAllItems, getSingleItems, updateItem } from "../controllers/ItemController"
+import { IItem, createItem, deleteCarriedItem, deleteItem, getAllItems, getSingleItems, updateCarriedItem, updateItem } from "../controllers/ItemController"
 
 const itemRoute = express.Router()
 
@@ -80,6 +80,34 @@ itemRoute.put("/update", userAuthentication, async (req: IAuthenticatedRequest, 
         const result = await updateItem(item)
         console.log("Result:",result)
         return res.status(200).send(result)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+itemRoute.post("/update/carried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    try {
+        // TODO: WE need sanitation for all inputs here
+        const character_id = req.body.character_id 
+        const ids = req.body.item_ids 
+        const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
+        
+        await updateCarriedItem(character_id, ids, uuid)
+        return res.status(200).send(`Updated character ID ${character_id}`)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+itemRoute.delete("/update/carried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+    try {
+        // TODO: WE need sanitation for all inputs here
+        const character_id = req.body.character_id 
+        const carried_item_id = req.body.carried_item_id 
+        const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
+
+        await deleteCarriedItem(character_id, carried_item_id, uuid)
+        return res.status(200).send(`Updated character ID ${character_id}`)
     } catch (error) {
         return res.status(400).send(error)
     }

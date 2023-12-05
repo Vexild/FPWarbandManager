@@ -64,8 +64,13 @@ export const InitializeDatabase = async () =>{
     CREATE TABLE IF NOT EXISTS CarriedItem (
         id SERIAL PRIMARY KEY,
         item_id INTEGER NOT NULL,
-        warband_id INTEGER NOT NULL,
-        character_id INTEGER
+        character_id INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS Stash (
+        id SERIAL PRIMARY KEY,
+        item_id INTEGER NOT NULL,
+        warband_id INTEGER NOT NULL
     );
     `
 
@@ -92,10 +97,17 @@ export const InitializeDatabase = async () =>{
     ]
 
     const populateCarriedItems = [    
-        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 1, 1, 1) ON CONFLICT DO NOTHING;",
-        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 1, 1, 2) ON CONFLICT DO NOTHING;",
-        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 2, 1, 3) ON CONFLICT DO NOTHING;",
-        "INSERT INTO CarriedItem(item_id, warband_id, character_id) VALUES ( 3, 1, null) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem (item_id, character_id) VALUES ( 1, 1 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem (item_id, character_id) VALUES ( 1, 2 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem (item_id, character_id) VALUES ( 2, 3 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO CarriedItem (item_id, character_id) VALUES ( 3, 1 ) ON CONFLICT DO NOTHING;",
+    ]
+
+    const populateStash = [    
+        "INSERT INTO Stash (item_id, warband_id) VALUES ( 1, 1 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO Stash (item_id, warband_id) VALUES ( 1, 1 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO Stash (item_id, warband_id) VALUES ( 2, 1 ) ON CONFLICT DO NOTHING;",
+        "INSERT INTO Stash (item_id, warband_id) VALUES ( 3, 1 ) ON CONFLICT DO NOTHING;",
     ]
 
     console.log("INITIALIZE DB TABLES")
@@ -119,6 +131,10 @@ export const InitializeDatabase = async () =>{
         })
         console.log("POPULATE TABLES: CarriedItem")
         populateCarriedItems.forEach( async (item) => {
+            await executeQuery(item)
+        })
+        console.log("POPULATE TABLES: Stash")
+        populateStash.forEach( async (item) => {
             await executeQuery(item)
         })
         

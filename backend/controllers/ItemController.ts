@@ -15,6 +15,11 @@ export interface IItem {
     artifact_owner: number | null
 }
 
+interface IUpdate {
+    character_id: number,
+    carried_item_ids: Array<number>
+}
+
 export const getAllItems = async (artifact: string, priceAscending: string, type: string) => {
     try {
         console.log("ASDASDASD")
@@ -92,6 +97,44 @@ export const updateItem = async (item: IItem) => {
     }
 }
 
+export const updateCarriedItem = async (character_id: number, ids: Array<number>, uuid: string) => {
+    const query = `
+        INSERT INTO CarriedItem ( item_id, character_id )
+        SELECT $1, $2
+        WHERE EXISTS (
+                SELECT ci.item_id, ci.character_id FROM CarriedItem ci
+                    INNER JOIN Character c ON ci.character_id = c.character_id
+                    INNER JOIN Warband w ON c.warband_id = w.warband_id
+                WHERE ci.item_id = $1 
+                AND ci.character_id = $2
+                AND w.owner_uuid = $3
+            )
+        RETURNING *
+    `
+    for(let round = 0; round <= ids.length; round++){
+        const params = [String(ids[round]), String(character_id), uuid]
+        await executeQuery(query, params)
+    }   
+}
+
+export const deleteCarriedItem = async (character_id: number, item_id: number, uuid: string) => {
+    try{
+        const query = `
+            DELETE FROM CarriedItem ci
+            USING  Character c, Warband w
+            WHERE ci.character_id = $1 
+            AND ci.id = $2 
+            AND w.owner_uuid = $3
+            RETURNING * 
+        `
+        const params = [String(character_id), String(item_id), uuid]
+        const result = await executeQuery(query, params)
+        return result.rows[0]
+    } catch (error) {
+        throw new Error("Error while deleting carried item")
+    }
+    
+}
 
 // get all items - include parameter filtering for artifacts
 // modigy item by id - include artifact ownership
@@ -105,7 +148,3 @@ export const deleteItem =async (item_id: number) => {
     return result.rows[0]
 }
 
-// const itemQuery = `
-//     INSERT INTO Item (item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES
-//         ( ($1), ($2), ($3), ($4), ($5), ($6), ($7), ($8), ($9), ($10), ($11))
-// )`

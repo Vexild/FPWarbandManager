@@ -1,5 +1,4 @@
 import { executeQuery } from "./DatabaseController"
-import { IItem } from "./ItemController"
 
 export interface ICharacter {
     character_id?: number,
@@ -13,7 +12,6 @@ export interface ICharacter {
     pre: string,
     tou: string,
     eq_slots: number,
-    inventory?: Array<IItem>
 }
 // create Character. This creates from 1 to 5 characters to single warband
 export const createCharacter = async (warband_id: number, uuid: string, characters: Array<ICharacter> ) => {    
@@ -49,9 +47,7 @@ export const createCharacter = async (warband_id: number, uuid: string, characte
             character_parameters.push(uuid)
             const result = await executeQuery(query, character_parameters)
             console.log("result.rows[0]",result.rows[0])
-            
             return result.rows[0]
-            
         } )
         console.log("createdCharacters",createdCharacters)
         return createdCharacters
@@ -213,9 +209,8 @@ export const getSingleCharacter = async (c_id: number) => {
     return fromatted_result
 }
 
-export const updateCharacter =async (character: ICharacter, uuid: string) => {
+export const updateCharacter = async (character: ICharacter, uuid: string) => {
     const { character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots } = character
-    // maybe we should first implement the items for the characters since we need them here
     const query = `
         UPDATE Character c 
         SET 
@@ -233,13 +228,10 @@ export const updateCharacter =async (character: ICharacter, uuid: string) => {
         RETURNING character_id, warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots
     `
     const params = [character_name, String(hp), String(armor_tier), str, agi, pre, tou, String(eq_slots), uuid, String(character_id)]
-    console.log("Params: ",params)
     const result = await executeQuery(query, params)
-    //console.log("Update result: ",result)
     if (result.rows.length === 0) {
         return 0
     }
-    // Then we take all eqiupments and save them. 
     return result.rows[0]
     
 }
