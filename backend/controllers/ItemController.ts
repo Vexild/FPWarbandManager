@@ -57,11 +57,25 @@ export const getSingleItems = async (item_id: number) => {
 export const createItem = async (item: IItem) => {
     try {
         const { item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner } = item
-        const query = "INSERT INTO item(item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING *;"
+        const query = `
+            INSERT INTO 
+                item (
+                    item_name,
+                    item_type,
+                    item_desc,
+                    item_attrib,
+                    damage,
+                    armor_value,
+                    effect,
+                    item_price,
+                    large_item,
+                    artifact,artifact_owner
+                ) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) 
+            RETURNING *;`
         const params = [ item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, artifact_owner] 
         // TODO: fix this ts error
         const result = await executeQuery(query, params)
-        console.log( result.rows)
         return result.rows[0] as IItem
     } catch (error) {
         throw new Error("Error while creating Item")

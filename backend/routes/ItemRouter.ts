@@ -91,7 +91,6 @@ itemRoute.post("/update/carried", userAuthentication, async (req: IAuthenticated
         const character_id = req.body.character_id 
         const ids = req.body.item_ids 
         const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
-        
         await updateCarriedItem(character_id, ids, uuid)
         return res.status(200).send(`Updated character ID ${character_id}`)
     } catch (error) {
