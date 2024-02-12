@@ -2,9 +2,35 @@ import { executeQuery } from "./DatabaseController"
 import { IItem } from "./ItemController"
 
 // Add item
-export const addStashedItem = async (warband_id: number, stashed_item_ids: Array<number>, uuid: string) => {
+export const getStashedItems = async (warband_id: string) => {
     try {
-        const added_items = await Promise.all(stashed_item_ids.map( async (item) => {
+        const query = `
+            SELECT * FROM item AS i
+            JOIN Stash AS s ON i.item_id = s.item_id
+            JOIN Warband AS w ON w.warband_id = s.warband_id
+            AND w.warband_id = ($1)
+            `
+        // const query = `
+        //     SELECT * FROM item AS i
+        //     JOIN Stash AS s ON i.item_id = s.item_id
+        //     JOIN Warband AS w ON w.warband_id = s.warband_id
+        //     AND w.warband_id = ($1)
+        //     AND w.owner_uuid = ($2)    
+        //     `
+        const params = [ warband_id] 
+        const result = await executeQuery(query, params)
+        console.log(result)    
+        return result.rows
+
+    } catch (error) {
+        throw new Error("Error while getting items from stash")
+    }
+}
+
+// Add item
+export const addStashedItem = async (warband_id: number, item_ids: Array<number>, uuid: string) => {
+    try {
+        const added_items = await Promise.all(item_ids.map( async (item) => {
             const query = `
                 INSERT INTO Stash (item_id, warband_id) 
                 SELECT $1, $2
@@ -20,6 +46,7 @@ export const addStashedItem = async (warband_id: number, stashed_item_ids: Array
                 ON CONFLICT DO NOTHING
                 RETURNING item_id`
             const params = [ String(item), String(warband_id), uuid] 
+            console.log(params)
             const result = await executeQuery(query, params)       
             return result.rows[0]
         }))
@@ -34,20 +61,19 @@ export const addStashedItem = async (warband_id: number, stashed_item_ids: Array
 // Remove item
 export const removeStashedItem = async (warband_id: number, stashed_item_index_ids: Array<number>, uuid: string) => {
     try {
-        const removed_items = await Promise.all(stashed_item_index_ids.map( async (item) => {
-            // const query = "DELETE FROM Stash WHERE id = $1 AND warband_id = $2 RETURNING item_id"
+        const removed_items = await Promise.all(stashed_item_index_ids.map( async (stash_id) => {
             const query = `
                 DELETE FROM Stash 
-                WHERE id = $1 
+                WHERE stash_index_id = $1 
                 AND warband_id = $2 
                 AND EXISTS (
                     SELECT warband_id FROM Warband
                     WHERE warband_id = $2
-                    AND owner_uuid = $3
+                    AND owner_uuid = ($3)
                 )
 
-                RETURNING item_id`
-            const params = [ String(item), String(warband_id), uuid]
+                RETURNING stash_index_id`
+            const params = [ String(stash_id), String(warband_id), uuid]
             const result = await executeQuery(query, params)
             return result.rows[0]
         }))

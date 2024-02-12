@@ -12,6 +12,7 @@ export const InitializeDatabase = async () =>{
     DROP TABLE IF EXISTS Character CASCADE;
     DROP TABLE IF EXISTS Warband CASCADE;
     DROP TABLE IF EXISTS Users CASCADE;
+    DROP TABLE IF EXISTS Stash CASCADE;
 
     CREATE TABLE IF NOT EXISTS Users (
         user_id serial PRIMARY KEY,
@@ -68,7 +69,7 @@ export const InitializeDatabase = async () =>{
     );
 
     CREATE TABLE IF NOT EXISTS Stash (
-        id SERIAL PRIMARY KEY,
+        stash_index_id SERIAL PRIMARY KEY,
         item_id INTEGER NOT NULL,
         warband_id INTEGER NOT NULL
     );

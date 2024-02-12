@@ -13,7 +13,7 @@ import "dotenv/config"
 const app = express();
 module.exports = app
 
-//InitializeDatabase()
+InitializeDatabase()
 
 const PORT = process.env.PORT
 app.use(express.json())
