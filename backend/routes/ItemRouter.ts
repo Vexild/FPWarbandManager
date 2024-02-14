@@ -40,9 +40,9 @@ itemRoute.get("/single/:id", userAuthentication, async (req: IAuthenticatedReque
 itemRoute.get("/all", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     // TODO add sanitation for query params
     try{
-
         const showArtifacts = req.query.artifact ? req.query.artifact : "false"
         const priceAscending = req.query.order ? String(req.query.order).toUpperCase() : "ASC"
+        console.log("show artifacts: ",showArtifacts)
         const orders = ["ASC", "DESC"]
         const types = ["weapon", "armor", "item"]
         if (!orders.includes(String(priceAscending))) {

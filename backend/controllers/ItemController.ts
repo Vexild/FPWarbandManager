@@ -15,14 +15,9 @@ export interface IItem {
     artifact_owner: number | null
 }
 
-interface IUpdate {
-    character_id: number,
-    carried_item_ids: Array<number>
-}
 
 export const getAllItems = async (artifact: string, priceAscending: string, type: string) => {
     try {
-        console.log("ASDASDASD")
         let params = [String(artifact)]
         let query = "SELECT * FROM Item WHERE artifact = ($1)"
         if (type !== "") {

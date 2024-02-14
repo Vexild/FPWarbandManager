@@ -200,7 +200,7 @@ Characters are individual members of warband
 Items exist in stash or with characters inventory
 | Method | Endpoint | Protected | Info | Body |
 |-|-|-|-|-| 
-| GET | /item/all | x | Gets all items from in database. This endpoint is protected so no unique items can be seen outside for privacy |
+| GET | /item/all?artifact&order | x | Gets all items from in database. This endpoint is protected so no unique items can be seen outside for privacy. Queryparameter choises for  "artifact" are "false" and "true" and for order "ASC" and "DESC" |
 | GET | /item/single/:id | x | Get info of single item |
 | POST | /item/new | x | Post new item | See "Item body" bellow"
 | PUT | /item/update | x | Update existing item. | See "Item body" bellow"
