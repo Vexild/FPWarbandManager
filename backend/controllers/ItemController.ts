@@ -131,7 +131,7 @@ export const updateCarriedItem = async (character_id: number, ids: Array<number>
     }   
 }
 
-export const deleteCarriedItem = async (character_id: number, item_id: number, uuid: string) => {
+export const removeCarriedItem = async (character_id: number, item_id: number, uuid: string) => {
     try{
         const query = `
             DELETE FROM CarriedItem ci

@@ -1,6 +1,6 @@
-import express, {Response, Request} from "express"
+import express, {Response} from "express"
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware"
-import { IItem, createItem, deleteCarriedItem, deleteItem, getAllItems, getSingleItems, updateCarriedItem, updateItem } from "../controllers/ItemController"
+import { IItem, createItem, deleteItem, getAllItems, getSingleItems, removeCarriedItem, updateCarriedItem, updateItem } from "../controllers/ItemController"
 
 const itemRoute = express.Router()
 
@@ -85,7 +85,7 @@ itemRoute.put("/update", userAuthentication, async (req: IAuthenticatedRequest, 
     }
 })
 
-itemRoute.post("/update/carried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+itemRoute.put("/updatecarried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     try {
         // TODO: WE need sanitation for all inputs here
         const character_id = req.body.character_id 
@@ -98,14 +98,14 @@ itemRoute.post("/update/carried", userAuthentication, async (req: IAuthenticated
     }
 })
 
-itemRoute.delete("/update/carried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
+itemRoute.delete("/removecarried", userAuthentication, async (req: IAuthenticatedRequest, res: Response) => {
     try {
         // TODO: WE need sanitation for all inputs here
         const character_id = req.body.character_id 
         const carried_item_id = req.body.carried_item_id 
         const uuid = req.userToken?.uuid ? req.userToken?.uuid : ""
 
-        await deleteCarriedItem(character_id, carried_item_id, uuid)
+        await removeCarriedItem(character_id, carried_item_id, uuid)
         return res.status(200).send(`Updated character ID ${character_id}`)
     } catch (error) {
         return res.status(400).send(error)

@@ -58,7 +58,10 @@ export const createCharacter = async (warband_id: number, uuid: string, characte
 // get character by userID
 export const getAllCharacters = async () => { // we want to add here optional parameters: "warband id", "character_id" and "user id". Also change name to "getCharacters"
     const query = `
-        SELECT character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, c.warband_id, w.warband_name FROM Character c JOIN Warband w ON c.warband_id = w.warband_id WHERE w.public = True`
+        SELECT character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, c.warband_id, w.warband_name 
+        FROM Character c 
+        JOIN Warband w ON c.warband_id = w.warband_id 
+        WHERE w.public = True`
     const result = await executeQuery(query) 
     const fromatted_result = result.rows.map(row => {
         const { character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, warband_id, warband_name } = row;
@@ -84,26 +87,46 @@ export const getAllCharacters = async () => { // we want to add here optional pa
 }
 
 // get character by userID
-export const getCharactersByWarband = async (warband_id: number) => { // we want to add here optional parameters: "warband id", "character_id" and "user id". Also change name to "getCharacters"
+// TOO LONG FUNCTION
+export const getCharactersByWarband = async (warband_id: number) => {
     const query = `
-        SELECT character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, w.warband_name FROM Character c JOIN Warband w ON c.warband_id = w.warband_id WHERE w.public = True AND w.warband_id = ($1)`
+        SELECT character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots, w.warband_name 
+        FROM Character c 
+        JOIN Warband w ON c.warband_id = w.warband_id 
+        WHERE w.public = True 
+        AND w.warband_id = ($1)`
     const params = [String(warband_id)]
     const result = await executeQuery(query, params)
     if (result.rows.length === 0) {
         return 0
     }
 
-    // NOw we need items for this warband
+    const characterIds = result.rows.map((character) => character.character_id )
     const itemQuery = `
-        SELECT * FROM Item i JOIN CarriedItem ci ON i.item_id = ci.item_id  WHERE ci.warband_id = ($1)
+        SELECT i.item_id, item_name, item_type, item_desc, item_attrib, damage, armor_value, effect, item_price, large_item, artifact, carried_index_id FROM Item i 
+        JOIN CarriedItem ci ON i.item_id = ci.item_id
+        WHERE ci.character_id = ($1) 
     `
-    const items = await executeQuery(itemQuery, [String(warband_id)])
-    console.log("Items of this warband: ",items.rows)
+    const carriedItems = await Promise.all(characterIds.map(async (id: number) => {
+        const characerItems = await executeQuery(itemQuery, [String(id)])
+        const items = characerItems.rows
+        return {
+            characterId: id,
+            items: items
+        }
+    }))
+    
+    const stashQuery = `
+        SELECT * FROM Item i 
+        JOIN Stash s ON i.item_id = s.item_id
+        WHERE s.warband_id = ($1) 
+    `
+    const warbandStash = await executeQuery(stashQuery, [String(warband_id)])
     const fromatted_result = {
         warband_id: warband_id,
         warband_name: result.rows[0].warband_name,
-        warband_stash: [
-            items.rows.filter((item) => item.warband_id == warband_id && item.character_id == null).map( (item) => {
+        warband_stash: //TODO: Add proper interface here
+            warbandStash.rows.filter((item: { warband_id: number; character_id: null }) => item.warband_id == warband_id && item.character_id == null).map( (item: { item_name: any; item_type: any; item_desc: any; large_item: any; item_attrib: any; artifact: any; damage: any; armor_value: any; effect: any; item_price: any }) => {
                 const formatted_item = {
                     item_name: item.item_name,
                     item_type: item.item_type,
@@ -117,12 +140,10 @@ export const getCharactersByWarband = async (warband_id: number) => { // we want
                     item_price: item.item_price ? item.item_price : undefined,
                 }
                 return formatted_item
-            })
-        ],
+            }),
         members: 
             result.rows.map(row => {
                 const { character_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots } = row;
-                console.log("Characeter ID: ",character_id)
                 const entry = {
                     id: character_id,
                     name: character_name,
@@ -135,24 +156,8 @@ export const getCharactersByWarband = async (warband_id: number) => { // we want
                         tou: tou
                     },
                     eq_slots: eq_slots,
-                    inventory: [ 
-                        items.rows.filter((item) => item.character_id == character_id).map( (item) => {
-                            const formatted_item = {
-                                item_name: item.item_name,
-                                item_type: item.item_type,
-                                item_desc: item.item_desc,
-                                large_item: item.large_item,
-                                item_attrib: item.item_attrib ? item.item_attrib : undefined,
-                                artifact: item.artifact ? item.artifact : undefined,
-                                damage: item.damage ? item.damage : undefined,
-                                armor_value: item.armor_value ? item.armor_value : undefined,
-                                effect: item.effect ? item.effect : undefined,
-                                item_price: item.item_price ? item.item_price : undefined,
-                            }
-                            return formatted_item
-                        })
-                        // firgure out how to access all of the properties of an Item
-                    ], // we print here all items from CarriedItem table that share the character_id and warband_id AND those that are not stashed.
+                    inventory: (carriedItems.filter( (item) => item.characterId === character_id)).map( (collection) => collection.items)[0],
+                    // We need to choose the first element of the array because filtering and mapping produces a common array in which all items would be placed
                 }
                 return entry
             })
@@ -163,7 +168,11 @@ export const getCharactersByWarband = async (warband_id: number) => { // we want
 // get character by userID
 export const getSingleCharacter = async (c_id: number) => {
     const query = `
-        SELECT character_id, c.warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots,  w.warband_name FROM Character c JOIN Warband w ON c.warband_id = w.warband_id WHERE w.public = True AND c.character_id = ($1)`
+        SELECT character_id, c.warband_id, character_name, hp, armor_tier, str, agi, pre, tou, eq_slots,  w.warband_name 
+        FROM Character c 
+        JOIN Warband w ON c.warband_id = w.warband_id 
+        WHERE w.public = True 
+        AND c.character_id = ($1)`
     const params = [String(c_id)]
     const character = await executeQuery(query, params)
     if (character.rows.length === 0) {
@@ -187,7 +196,7 @@ export const getSingleCharacter = async (c_id: number) => {
         pre: pre,
         tou: tou,
         eq_slots: eq_slots,
-        inventory: [ 
+        inventory:
             items.rows.filter((item) => item.character_id == character_id).map( (item) => {
                 const formatted_item = {
                     item_name: item.item_name,
@@ -204,7 +213,7 @@ export const getSingleCharacter = async (c_id: number) => {
                 return formatted_item
             })
             // firgure out how to access all of the properties of an Item
-        ], // we print here all items from CarriedItem table that share the character_id and warband_id AND those that are not stashed.
+        , // we print here all items from CarriedItem table that share the character_id and warband_id AND those that are not stashed.
     }
     return fromatted_result
 }
@@ -261,3 +270,7 @@ const getWarbandSizeById = async (warband_id: number) => {
     console.log("Warband size: ",result.rows[0].count)
     return Number(result.rows[0].count)
 }   
+
+function async(arg0: string): any {
+    throw new Error("Function not implemented.")
+}

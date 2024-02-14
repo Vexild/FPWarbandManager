@@ -1,5 +1,5 @@
 import express, { Request, Response} from "express"
-import { ICharacter, createCharacter, deleteCharacter, getAllCharacters, getCharactersByWarband, getCharactersBywarband, getSingleCharacter, updateCharacter } from "../controllers/CharacterController";
+import { ICharacter, createCharacter, deleteCharacter, getAllCharacters, getCharactersByWarband, getSingleCharacter, updateCharacter } from "../controllers/CharacterController";
 import { IAuthenticatedRequest, userAuthentication } from "../middleware/UserAuthenticationMiddleware";
 
 const characterRoute = express.Router();
@@ -15,7 +15,7 @@ characterRoute.get("/all", async (req: Request, res: Response) => {
     }
 })
 
-characterRoute.get("/bywarband/:id", userAuthentication , async (req: IAuthenticatedRequest, res: Response) => {
+characterRoute.get("/bywarband/:id" , async (req: IAuthenticatedRequest, res: Response) => {
     try {
         const warband_id: number = Number(req.params.id)
         // All warband_id parameters require sanitation => should be a positive integer
@@ -29,7 +29,7 @@ characterRoute.get("/bywarband/:id", userAuthentication , async (req: IAuthentic
     }
 })
 
-characterRoute.get("/single/:id", userAuthentication , async (req: IAuthenticatedRequest, res: Response) => {
+characterRoute.get("/single/:id" , async (req: IAuthenticatedRequest, res: Response) => {
     try {
         const character_id: number = Number(req.params.id)
         // character id require sanitation => should be a positive integer

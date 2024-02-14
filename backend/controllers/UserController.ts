@@ -3,13 +3,6 @@ import jwt from "jsonwebtoken"
 import { User, RegUser } from "../routes/UserRouter"
 import { executeQuery } from "./DatabaseController"
 
-// create User
-// Update user
-// Delete user
-// retun token
-// hash pass
-
-
 export const registerUser = async (user: RegUser) => {
     
     try {
@@ -34,11 +27,8 @@ export const validateUser = async (user: User) => {
         SELECT user_uuid, user_password FROM users WHERE user_name=($1)
     `
     const result = await executeQuery(query, [user.userName])
-    console.log(result)
     const hashedPassword = result.rows[0].user_password
     const uuid = result.rows[0].user_uuid
-    console.log(user.password)
-    console.log(hashedPassword)
     return await argon2.verify(hashedPassword, user.password)
         .then(() => {
             const token = createToken(user.userName, uuid)
@@ -93,12 +83,3 @@ const createToken = (name: string, uuid: string) => {
     console.log("Token created: ",token)
     return token
 }
-// export const InitDatabase = (user: RegUser) => {
-
-
-// }
-
-// export const createUser = (user: RegUser) => {
-    
-
-// }

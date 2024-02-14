@@ -63,7 +63,7 @@ export const InitializeDatabase = async () =>{
     );
     
     CREATE TABLE IF NOT EXISTS CarriedItem (
-        id SERIAL PRIMARY KEY,
+        carried_index_id SERIAL PRIMARY KEY,
         item_id INTEGER NOT NULL,
         character_id INTEGER NOT NULL
     );
