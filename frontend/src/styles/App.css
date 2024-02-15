@@ -1,0 +1,24 @@
+.center {
+  text-align: center;
+}
+
+.bordered {
+  border: #1f1f1f 1px dotted;
+}
+
+.page-title {
+  justify-content: center;
+  font-size: xx-large;
+}
+
+.page-content {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  height: auto;
+  max-width: 50%;
+}
+
+.navigation-row {
+  flex-direction: row;
+}/*# sourceMappingURL=App.css.map */
