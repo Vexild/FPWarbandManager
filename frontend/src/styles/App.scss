@@ -1,20 +1,31 @@
-
 .center {
   text-align: center;
 }
+
 .bordered {
   border: #1f1f1f 1px dotted;
 }
+
 .page-title {
   justify-content: center;
   font-size: xx-large;
 }
 
-.page-content {
-  flex-direction: row;
-  display: flex;
+.page-container {
+  position: relative;
+  min-height: 100vh;
 }
+
 .navigation-row {
   flex-direction: row;
-  display: flex;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2.5rem;
+  background-color: black;
+  color: white;
 }

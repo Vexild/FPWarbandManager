@@ -24,14 +24,14 @@ export const registerUser = async (user: RegUser) => {
 
 export const validateUser = async (user: User) => {
     const query = `
-        SELECT user_uuid, user_password FROM users WHERE user_name=($1)
+        SELECT user_uuid, user_password FROM users WHERE email=($1)
     `
-    const result = await executeQuery(query, [user.userName])
+    const result = await executeQuery(query, [user.email])
     const hashedPassword = result.rows[0].user_password
     const uuid = result.rows[0].user_uuid
     return await argon2.verify(hashedPassword, user.password)
         .then(() => {
-            const token = createToken(user.userName, uuid)
+            const token = createToken(user.email, uuid)
             return token
         })
         .catch(() => {

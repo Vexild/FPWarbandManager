@@ -112,7 +112,8 @@ Characters are individual members of warband
 
 
 #### Character body
-```{
+```
+{
 	"warband_name": "Nueva Gang",
 	"warband_resources": 50,
 	"owner_id": 2,

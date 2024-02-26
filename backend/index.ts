@@ -8,6 +8,7 @@ import stashRoute from "./routes/StashRoute";
 import { InitializeDatabase } from "./db/DatabaseInit"
 import { NoRouteFound } from "./middleware/NoRouteMiddleware"
 import "dotenv/config"
+import cors from "cors";
 
 
 const app = express();
@@ -16,6 +17,7 @@ module.exports = app
 //InitializeDatabase()
 
 const PORT = process.env.PORT
+app.use(cors())
 app.use(express.json())
 app.use("/", versionRoute)
 app.use("/user", userRoute)

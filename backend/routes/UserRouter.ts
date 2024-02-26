@@ -9,7 +9,7 @@ export interface RegUser extends User {
 }
 
 export interface User {
-    userName: string,
+    email: string,
     password: string,
 }
 
@@ -29,14 +29,14 @@ userRoute.post("/register", async (req: Request, res: Response) => {
 
 userRoute.post("/login", async (req: Request, res: Response) => {
     console.log(req.body)
-    const user: User = { userName: req.body.userName, password: req.body.password }
+    const user: User = { email: req.body.email, password: req.body.password }
     await validateUser(user)
         .then( (token) => {
             console.log("Token: ",token)
             res.status(200).send(token)
         })
         .catch( () => {
-            res.status(401).send("Invalid username or password")
+            res.status(401).send("Invalid email or password")
         })
 })
 
