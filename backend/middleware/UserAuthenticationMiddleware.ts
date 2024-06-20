@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 export interface IAuthenticatedRequest extends Request {
     userToken?: IUserToken 
 }
-interface IUserToken {
+export interface IUserToken {
     name?: string
     uuid: string
 }

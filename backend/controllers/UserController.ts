@@ -7,7 +7,7 @@ export const registerUser = async (user: RegUser) => {
     
     try {
         const hashedPassword = await argon2.hash(user.password)
-        const params = [ user.userName, hashedPassword, user.email]
+        const params = [ user.username, hashedPassword, user.email]
         console.log("Parameters: ",params)
         const query = `
             INSERT INTO users (user_name, user_password, email) VALUES ($1, $2, $3) RETURNING user_uuid`
@@ -15,7 +15,7 @@ export const registerUser = async (user: RegUser) => {
         const result = await executeQuery(query, params)
         const uuid = result.rows
         console.log("Registering Result: ", uuid)
-        const token = createToken(user.userName, String(uuid))
+        const token = createToken(user.username, String(uuid))
         return token
     } catch (error) {
         throw new Error("User already exists")
@@ -44,7 +44,7 @@ export const updateUser = async (user: RegUser) => {
         const query =`
             UPDATE users SET user_name = ($1), user_password = ($2) WHERE email = ($3) RETURNING user_id
         `
-        const result = await executeQuery(query, [user.userName, user.password, user.email])
+        const result = await executeQuery(query, [user.username, user.password, user.email])
         return result.rows
 
     } catch (error) {

@@ -4,3 +4,4 @@ node_modules/
 backend/coverage
 backend/jest.config.js
 backend/dist
+backend/__tests__
