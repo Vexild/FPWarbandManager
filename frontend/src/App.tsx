@@ -19,11 +19,7 @@ function App() {
   const authContext = useAuthContext()
 
   useEffect(() =>{
-    const getAuthState = async () => {
-      console.log("App, Token: ",authContext.token)
-      //const state = await authContext.isLoggedIn()
-    }
-    getAuthState()
+    console.log("App, Token: ",authContext.isLoggedIn())
   },[])
 
   const handleLogout = () => {
@@ -36,7 +32,12 @@ function App() {
     <>
         <Container className='center page-container'>
           <Row className="page-title bordered">
-            <h1>Forbidden Builder</h1>
+          {authContext.token != null ? (
+            <p className='loggedInIndicator'>{authContext.user} LoggedIn!</p>
+          ) : (<></>)
+        }
+          
+          <h1 className='medievalsharp-regular'>Forbidden Builder</h1>
           </Row>
           <Row className='bordered navigation-row'>
             <Router>
