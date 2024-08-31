@@ -18,59 +18,59 @@ function App() {
 
   const authContext = useAuthContext()
 
-  useEffect(() =>{
-    console.log("App, Token: ",authContext.isLoggedIn())
-  },[])
+  useEffect(() => {
+    console.log("App, Token: ", authContext.isLoggedIn())
+    console.log("App, User: ", authContext.getUserInformation())
+  }, [])
 
   const handleLogout = () => {
     console.log("Logout")
     authContext.logout()
     redirect("/")
   }
-  
+
   return (
     <>
-        <Container className='center page-container'>
-          <Row className="page-title bordered">
-          {authContext.token != null ? (
-            <p className='loggedInIndicator'>{authContext.user} LoggedIn!</p>
+      <Container className='center page-container'>
+        <Row className="page-title bordered">
+          {authContext.getUserInformation() != null ? (
+            <p className='loggedInIndicator'>{authContext.getUserInformation()?.name} LoggedIn!</p>
           ) : (<></>)
-        }
-          
+          }
+
           <h1 className='medievalsharp-regular'>Forbidden Builder</h1>
-          </Row>
-          <Row className='bordered navigation-row'>
-            <Router>
-              <Link to="/">Home</Link>
-              <Link to="/profile">Profile</Link>
-              <Link to="/Warband">Warband</Link>
-              {
-                authContext.token === null ? 
+        </Row>
+        <Row className='bordered navigation-row'>
+          <Router>
+            <Link to="/">Home</Link>
+            <Link to="/profile">Profile</Link>
+            <Link to="/Warband">Warband</Link>
+            {
+              authContext.isLoggedIn() === false ?
                 <Link to="/login">Login</Link> :
                 <Dropdown>
-      <Dropdown.Toggle variant="success" id="dropdown-basic">
-        Dropdown Button
-      </Dropdown.Toggle>
+                  <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    Dropdown Button
+                  </Dropdown.Toggle>
 
-      <Dropdown.Menu>
-        <Dropdown.Item href="#/action-1"><Button onClick={() => handleLogout()}>Logout</Button></Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-              }
+                  <Dropdown.Menu>
+                    <Dropdown.Item href="#/action-1"><Button onClick={() => handleLogout()}>Logout</Button></Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+            }
+            <Routes>
+              <Route path="/" element={<Landingpage />} />
+              <Route path="/warband" element={<Warband />} />
+              <Route path="/login" element={<LoginPage />} /> :
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </Router>
 
-              <Routes>
-                <Route path="/" element={<Landingpage />} />
-                <Route path="/warband" element={<Warband />} />
-                <Route path="/login" element={<LoginPage />} /> :
-                <Route path="/profile" element={<Profile />} />
-              </Routes>
-            </Router>
-
-          </Row >
-          <Row className='footer'>
-            <p>footer</p>
-          </Row>
-        </Container >
+        </Row >
+        <Row className='footer'>
+          <p>footer</p>
+        </Row>
+      </Container >
     </>
   )
 }
