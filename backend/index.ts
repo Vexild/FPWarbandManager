@@ -19,7 +19,7 @@ const PORT = process.env.PORT
 
 app.use(cors())
 app.use(express.json())
-app.use("/", versionRoute)
+app.use("/v", versionRoute)
 app.use("/user", userRoute)
 app.use("/warband", warbandRouter )
 app.use("/character", characterRouter )

@@ -43,20 +43,23 @@ function App() {
         <Row className='bordered navigation-row'>
           <Router>
             <Link to="/">Home</Link>
-            <Link to="/profile">Profile</Link>
             <Link to="/Warband">Warband</Link>
             {
               authContext.isLoggedIn() === false ?
-                <Link to="/login">Login</Link> :
-                <Dropdown>
-                  <Dropdown.Toggle variant="success" id="dropdown-basic">
-                    Dropdown Button
-                  </Dropdown.Toggle>
+                <Link to="/login">Login</Link>
+                :
+                <div>
+                  <Link to="/profile">Profile</Link>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                      Dropdown Button
+                    </Dropdown.Toggle>
 
-                  <Dropdown.Menu>
-                    <Dropdown.Item href="#/action-1"><Button onClick={() => handleLogout()}>Logout</Button></Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                    <Dropdown.Menu>
+                      <Dropdown.Item><Button onClick={() => handleLogout()}>Logout</Button></Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
             }
             <Routes>
               <Route path="/" element={<Landingpage />} />
